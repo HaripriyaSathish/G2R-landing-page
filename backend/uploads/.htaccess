@@ -1,0 +1,9 @@
+Options -Indexes
+<FilesMatch "\.(php\d?|phtml|phar|pl|py|cgi|sh)$">
+    Require all denied
+</FilesMatch>
+<IfModule mod_headers.c>
+    Header set Access-Control-Allow-Origin "*"
+</IfModule>
+AddType image/avif .avif
+AddType image/webp .webp

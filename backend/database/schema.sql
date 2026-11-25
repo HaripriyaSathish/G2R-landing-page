@@ -1,0 +1,71 @@
+-- G2R Global Solutions landing page database
+CREATE DATABASE IF NOT EXISTS g2r_landing CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE g2r_landing;
+
+CREATE TABLE IF NOT EXISTS admins (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(60) NOT NULL UNIQUE,
+    password_hash VARCHAR(255) NOT NULL,
+    name VARCHAR(120) NOT NULL DEFAULT 'Administrator',
+    email VARCHAR(190) NULL,
+    last_login DATETIME NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS settings (
+    skey VARCHAR(100) PRIMARY KEY,
+    svalue MEDIUMTEXT NULL,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS media (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    file_name VARCHAR(255) NOT NULL,
+    original_name VARCHAR(255) NOT NULL,
+    mime VARCHAR(100) NOT NULL,
+    size INT UNSIGNED NOT NULL DEFAULT 0,
+    width INT UNSIGNED NULL,
+    height INT UNSIGNED NULL,
+    alt_text VARCHAR(255) NOT NULL DEFAULT '',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS sections (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    slug VARCHAR(60) NOT NULL UNIQUE,
+    name VARCHAR(120) NOT NULL,
+    sort_order INT NOT NULL DEFAULT 0,
+    is_active TINYINT(1) NOT NULL DEFAULT 1,
+    data LONGTEXT NULL,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS section_items (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    section_slug VARCHAR(60) NOT NULL,
+    grp VARCHAR(60) NOT NULL,
+    sort_order INT NOT NULL DEFAULT 0,
+    is_active TINYINT(1) NOT NULL DEFAULT 1,
+    data LONGTEXT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_section_grp (section_slug, grp, sort_order)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS enquiries (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(150) NOT NULL,
+    email VARCHAR(190) NOT NULL,
+    phone VARCHAR(40) NULL,
+    enquiry_type VARCHAR(150) NULL,
+    message TEXT NULL,
+    status ENUM('new','read','replied','archived') NOT NULL DEFAULT 'new',
+    notes TEXT NULL,
+    ip VARCHAR(64) NULL,
+    user_agent VARCHAR(255) NULL,
+    mail_status ENUM('pending','sent','failed','skipped') NOT NULL DEFAULT 'pending',
+    mail_error VARCHAR(500) NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_status (status),
+    INDEX idx_ip_time (ip, created_at)
+) ENGINE=InnoDB;

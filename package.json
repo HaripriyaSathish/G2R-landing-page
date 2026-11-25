@@ -1,0 +1,15 @@
+{
+  "name": "g2r-landing",
+  "private": true,
+  "description": "G2R Global Solutions landing page — React + Vite frontend, core PHP backend",
+  "scripts": {
+    "dev": "concurrently -k -n backend,frontend -c blue,magenta \"npm:backend\" \"npm:frontend\"",
+    "backend": "php -S localhost:8000 -t backend backend/router.php",
+    "frontend": "npm --prefix frontend run dev",
+    "build": "npm --prefix frontend run build",
+    "setup": "npm install && npm --prefix frontend install"
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.7"
+  }
+}
