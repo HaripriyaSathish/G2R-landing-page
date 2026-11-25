@@ -17,9 +17,9 @@ export default function About({ section }) {
           <Img image={d.image} className="about-person" alt="About G2R Global Solutions" />
         </Reveal>
 
-        <div>
+        <div className="about-content">
           <Eyebrow text={d.badge} light />
-          <Reveal variants={fadeRight}><Heading className="about-title" text={d.title} /></Reveal>
+          <Reveal className="about-head" variants={fadeRight}><Heading className="about-title" text={d.title} /></Reveal>
           <Reveal className="about-text" variants={fadeUp} i={1}><Paragraphs text={d.description} /></Reveal>
           {d.expertise_label && <Reveal className="label-accent" i={2}>{d.expertise_label}</Reveal>}
           <div className="expertise-grid">
