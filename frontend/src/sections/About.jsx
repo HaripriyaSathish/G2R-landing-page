@@ -1,12 +1,53 @@
+import { useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { ArrowRight } from 'lucide-react'
 import { Eyebrow, Heading, Icon, Img, Paragraphs, Reveal, SmartLink, fadeLeft, fadeRight, fadeUp, zoomIn } from '../components/ui'
 
+// The cutout person fills x 20.2%..88.8% of the About PNG (the rest is transparent)
+const PERSON_LEFT = 0.202
+const PERSON_RIGHT = 0.888
+
 export default function About({ section }) {
   const d = section.data
   const expertise = section.items.expertise || []
+  const ref = useRef(null)
+
+  // Desktop: size the photo so the person's head starts at the heading's last line
+  // ("Workforces"), standing on the section bottom, and never reaching the cards.
+  useEffect(() => {
+    const sec = ref.current
+    if (!sec) return
+    const fit = () => {
+      const img = sec.querySelector('.about-person')
+      const title = sec.querySelector('.about-title')
+      const vis = sec.querySelector('.about-visual')
+      if (!img || !title || !vis) return
+      if (window.innerWidth <= 1024 || !img.naturalWidth) { img.style.removeProperty('--pw'); return }
+      const range = document.createRange()
+      range.selectNodeContents(title)
+      const lines = [...range.getClientRects()].filter((r) => r.width > 1 && r.height > 1)
+      if (!lines.length) return
+      const lastLineTop = Math.max(...lines.map((r) => r.top))
+      const box = vis.getBoundingClientRect()
+      const height = box.bottom - lastLineTop
+      let width = height * (img.naturalWidth / img.naturalHeight)
+      // keep the whole person on screen inside the left column (right edge is anchored in CSS)
+      const maxWidth = (box.right - 8) / (PERSON_RIGHT - PERSON_LEFT)
+      width = Math.max(360, Math.min(width, maxWidth))
+      img.style.setProperty('--pw', `${Math.round(width)}px`)
+    }
+    fit()
+    const ro = new ResizeObserver(fit)
+    ro.observe(sec)
+    const img = sec.querySelector('.about-person')
+    img?.addEventListener('load', fit)
+    document.fonts?.ready.then(fit)
+    window.addEventListener('resize', fit)
+    return () => { ro.disconnect(); img?.removeEventListener('load', fit); window.removeEventListener('resize', fit) }
+  }, [d.title, d.image?.url])
+
   return (
-    <section id="about" className="section dark about">
+    <section id="about" className="section dark about" ref={ref}>
       <div className="container about-grid">
         <Reveal className="about-visual" variants={fadeLeft}>
           {d.image_tag && (
