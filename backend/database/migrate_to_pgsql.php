@@ -8,6 +8,9 @@
  *   $env:DATABASE_URL = "postgresql://user:pass@host/db?sslmode=require"
  *   php -d extension=pdo_pgsql backend/database/migrate_to_pgsql.php           # stops if Postgres already has data
  *   php -d extension=pdo_pgsql backend/database/migrate_to_pgsql.php --fresh   # wipes the Postgres tables first
+ *   php -d extension=pdo_pgsql backend/database/migrate_to_pgsql.php --images  # only (re)copy image files from backend/uploads
+ *
+ * Image files are copied too (into the media_files table), so they survive Render redeploys.
  */
 declare(strict_types=1);
 
@@ -25,6 +28,7 @@ if (!extension_loaded('pdo_pgsql')) {
     exit("pdo_pgsql is not loaded. Run with:  php -d extension=pdo_pgsql " . implode(' ', $argv) . "\n");
 }
 $fresh = in_array('--fresh', $argv, true);
+$imagesOnly = in_array('--images', $argv, true);
 
 // Source: local MySQL from config/config.php (read-only use)
 $c = config('db');
@@ -48,6 +52,7 @@ $tz = config('timezone', 'UTC');
 $dbName = (string) $pg->query('SELECT current_database()')->fetchColumn();
 $pg->exec('ALTER DATABASE "' . str_replace('"', '""', $dbName) . '" SET timezone TO ' . $pg->quote($tz));
 
+if (!$imagesOnly) {
 $existing = 0;
 foreach ($tables as $t) {
     $existing += (int) $pg->query("SELECT COUNT(*) FROM {$t}")->fetchColumn();
@@ -60,7 +65,7 @@ $pg->beginTransaction();
 try {
     $pg->exec('SET LOCAL timezone TO ' . $pg->quote($tz));
     if ($fresh) {
-        $pg->exec('TRUNCATE ' . implode(', ', $tables) . ' RESTART IDENTITY');
+        $pg->exec('TRUNCATE media_files, ' . implode(', ', $tables) . ' RESTART IDENTITY CASCADE');
     }
     foreach ($tables as $t) {
         $pgCols = $pg->query("SELECT column_name FROM information_schema.columns WHERE table_schema = 'public' AND table_name = " . $pg->quote($t))->fetchAll(PDO::FETCH_COLUMN);
@@ -96,3 +101,30 @@ foreach ($tables as $t) {
     echo str_pad($t, 15) . " {$a} -> {$b}" . ($a === $b ? '' : '  MISMATCH') . "\n";
 }
 echo $ok ? "\nDone. All data copied.\n" : "\nCounts differ, check above.\n";
+} // end data copy
+
+// Image files: backend/uploads/* -> media_files (bytes in Postgres, survive Render redeploys)
+echo "\nCopying image files into PostgreSQL...\n";
+$save = $pg->prepare("INSERT INTO media_files (media_id, data) VALUES (?, decode(?, 'base64'))
+                      ON CONFLICT (media_id) DO UPDATE SET data = EXCLUDED.data");
+$copied = 0;
+$bytes = 0;
+$missing = [];
+foreach ($pg->query('SELECT id, file_name FROM media ORDER BY id')->fetchAll() as $m) {
+    $path = UPLOAD_PATH . '/' . basename($m['file_name']);
+    if (!is_file($path)) {
+        $missing[] = $m['file_name'];
+        continue;
+    }
+    $data = (string) file_get_contents($path);
+    $save->execute([(int) $m['id'], base64_encode($data)]);
+    $copied++;
+    $bytes += strlen($data);
+    echo "  #{$m['id']} {$m['file_name']} (" . round(strlen($data) / 1024) . " KB)\n";
+}
+$inDb = (int) $pg->query('SELECT COUNT(*) FROM media_files')->fetchColumn();
+$total = (int) $pg->query('SELECT COUNT(*) FROM media')->fetchColumn();
+echo "\nImages copied: {$copied} (" . round($bytes / 1048576, 1) . " MB). In database: {$inDb} of {$total} media rows.\n";
+if ($missing) {
+    echo 'Missing on disk (not copied): ' . implode(', ', $missing) . "\n";
+}

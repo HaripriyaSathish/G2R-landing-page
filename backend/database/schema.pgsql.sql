@@ -36,6 +36,13 @@ CREATE TABLE IF NOT EXISTS media (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Image bytes (Postgres only), so uploads survive Render redeploys/restarts.
+-- backend/uploads/ on the server is just a cache rebuilt from this table.
+CREATE TABLE IF NOT EXISTS media_files (
+    media_id INTEGER PRIMARY KEY REFERENCES media(id) ON DELETE CASCADE,
+    data BYTEA NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS sections (
     id SERIAL PRIMARY KEY,
     slug VARCHAR(60) NOT NULL UNIQUE,

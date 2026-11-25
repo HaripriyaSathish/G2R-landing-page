@@ -164,11 +164,74 @@ function media_store(string $tmpPath, string $originalName, bool $isUpload = tru
         $alt = ucwords(trim(preg_replace('/[-_]+/', ' ', pathinfo($originalName, PATHINFO_FILENAME))));
     }
 
-    $id = DB::insert(
-        'INSERT INTO media (file_name, original_name, mime, size, width, height, alt_text) VALUES (?,?,?,?,?,?,?)',
-        [$fileName, $originalName, $mime, $size, $w, $h, mb_substr($alt, 0, 250)]
-    );
+    $pdo = DB::pdo();
+    $pdo->beginTransaction();
+    try {
+        $id = DB::insert(
+            'INSERT INTO media (file_name, original_name, mime, size, width, height, alt_text) VALUES (?,?,?,?,?,?,?)',
+            [$fileName, $originalName, $mime, $size, $w, $h, mb_substr($alt, 0, 250)]
+        );
+        // On Postgres (Render + Neon) keep the bytes in the database so they survive redeploys
+        if (DB::isPg()) {
+            media_blob_save($id, (string) file_get_contents($dest));
+        }
+        $pdo->commit();
+    } catch (Throwable $e) {
+        $pdo->rollBack();
+        @unlink($dest);
+        throw $e;
+    }
     return DB::one('SELECT * FROM media WHERE id = ?', [$id]);
+}
+
+/** True when alt text is empty or just a file name ("Image (5)", "1630623505493", "5logo"). Mirrors isWeakAlt() in the frontend. */
+function alt_is_weak(string $alt): bool
+{
+    $a = trim($alt);
+    if (mb_strlen($a) < 3 || mb_strlen($a) > 90) {
+        return true;
+    }
+    return (bool) (preg_match('/^(image|images|img|photo|picture|pic|logo|screenshot|untitled|download|twittermeta)s?[\s_()\-\d]*$/i', $a)
+        || preg_match('/^[\d\s_\-()]+(logo)?$/i', $a)
+        || preg_match('/^\d+\s*logo$/i', $a)
+        || preg_match('/\b[a-f0-9]{12,}\b/i', $a)
+        || preg_match('/\b\d{6,}\w*\b/', $a));
+}
+
+/** Save (or replace) an image's bytes in the media_files table (Postgres only) */
+function media_blob_save(int $mediaId, string $bytes): void
+{
+    DB::run(
+        "INSERT INTO media_files (media_id, data) VALUES (?, decode(?, 'base64'))
+         ON CONFLICT (media_id) DO UPDATE SET data = EXCLUDED.data",
+        [$mediaId, base64_encode($bytes)]
+    );
+}
+
+/**
+ * Restore /uploads/<file> from the database into the local uploads folder (Postgres only).
+ * Returns the local path, or null if the image is not in the database.
+ */
+function media_blob_restore(string $fileName): ?string
+{
+    $fileName = basename($fileName);
+    $row = DB::one(
+        "SELECT encode(f.data, 'base64') AS b64 FROM media m JOIN media_files f ON f.media_id = m.id WHERE m.file_name = ?",
+        [$fileName]
+    );
+    if (!$row) {
+        return null;
+    }
+    if (!is_dir(UPLOAD_PATH)) {
+        @mkdir(UPLOAD_PATH, 0775, true);
+    }
+    $dest = UPLOAD_PATH . '/' . $fileName;
+    $tmp  = $dest . '.' . bin2hex(random_bytes(3)) . '.tmp';
+    if (@file_put_contents($tmp, base64_decode((string) $row['b64'])) === false || !@rename($tmp, $dest)) {
+        @unlink($tmp);
+        return null;
+    }
+    return $dest;
 }
 
 function human_size(int $bytes): string

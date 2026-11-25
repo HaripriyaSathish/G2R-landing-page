@@ -29,6 +29,7 @@ foreach (['site_logo' => 'Site logo', 'footer_logo' => 'Footer logo', 'site_favi
 }
 
 $media = DB::all('SELECT * FROM media ORDER BY id DESC');
+$weakAlt = count(array_filter($media, fn ($mm) => alt_is_weak((string) $mm['alt_text'])));
 $totalSize = array_sum(array_column($media, 'size'));
 
 admin_header('Media Library', 'media');
@@ -47,7 +48,7 @@ admin_header('Media Library', 'media');
       <div><h2><i data-lucide="images"></i> All media <span class="badge"><?= count($media) ?> files · <?= human_size((int) $totalSize) ?></span></h2><p>Click an image to see details, copy its URL, edit alt text or delete it.</p></div>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
         <div class="input-icon"><i data-lucide="search"></i><input type="search" id="mediaSearch" placeholder="Search…"></div>
-        <select id="mediaFilter" style="width:auto"><option value="all">All</option><option value="used">In use</option><option value="unused">Not used</option></select>
+        <select id="mediaFilter" style="width:auto"><option value="all">All</option><option value="used">In use</option><option value="unused">Not used</option><option value="weakalt">Needs alt text (<?= $weakAlt ?>)</option></select>
       </div>
     </div>
     <div class="card-body">
@@ -55,10 +56,11 @@ admin_header('Media Library', 'media');
         <div class="empty"><i data-lucide="image-off"></i><p>No images yet.</p></div>
       <?php else: ?>
       <div class="media-grid" id="mediaGrid">
-        <?php foreach ($media as $m): $used = $usage[(int) $m['id']] ?? []; ?>
-          <div class="media-card" data-id="<?= (int) $m['id'] ?>" data-name="<?= e(strtolower($m['original_name'] . ' ' . $m['alt_text'])) ?>" data-used="<?= $used ? 1 : 0 ?>"
+        <?php foreach ($media as $m): $used = $usage[(int) $m['id']] ?? []; $weak = alt_is_weak((string) $m['alt_text']); ?>
+          <div class="media-card" data-id="<?= (int) $m['id'] ?>" data-name="<?= e(strtolower($m['original_name'] . ' ' . $m['alt_text'])) ?>" data-used="<?= $used ? 1 : 0 ?>" data-weakalt="<?= $weak ? 1 : 0 ?>"
                data-json="<?= e(json_encode(['id' => (int) $m['id'], 'url' => media_url((int) $m['id'], false), 'abs' => media_url((int) $m['id']), 'name' => $m['original_name'], 'alt' => $m['alt_text'], 'mime' => $m['mime'], 'size' => human_size((int) $m['size']), 'dim' => $m['width'] ? $m['width'] . ' × ' . $m['height'] . ' px' : '—', 'date' => date('d M Y', strtotime($m['created_at'])), 'used' => $used])) ?>">
             <?php if ($used): ?><span class="used">In use</span><?php endif; ?>
+            <?php if ($weak): ?><span class="weak-alt" title="Alt text looks like a file name. Click to describe the image for SEO & accessibility.">Needs alt text</span><?php endif; ?>
             <div class="media-img"><img loading="lazy" src="<?= e(media_url((int) $m['id'], false)) ?>" alt="<?= e($m['alt_text']) ?>"></div>
             <div class="media-info"><strong title="<?= e($m['original_name']) ?>"><?= e($m['original_name']) ?></strong><small><?= $m['width'] ? (int) $m['width'] . '×' . (int) $m['height'] . ' · ' : '' ?><?= human_size((int) $m['size']) ?></small></div>
           </div>
@@ -110,7 +112,7 @@ admin_header('Media Library', 'media');
 
   const search=$('#mediaSearch'), filter=$('#mediaFilter');
   function apply(){const q=search.value.toLowerCase().trim(), f=filter.value;
-    $$('#mediaGrid .media-card').forEach(c=>{const okQ=!q||c.dataset.name.includes(q);const okF=f==='all'||(f==='used')===(c.dataset.used==='1');c.hidden=!(okQ&&okF);});}
+    $$('#mediaGrid .media-card').forEach(c=>{const okQ=!q||c.dataset.name.includes(q);const okF=f==='all'||(f==='weakalt'?c.dataset.weakalt==='1':(f==='used')===(c.dataset.used==='1'));c.hidden=!(okQ&&okF);});}
   search&&search.addEventListener('input',apply); filter&&filter.addEventListener('change',apply);
 
   const modal=$('#mediaDetail'); let cur=null;

@@ -13,7 +13,7 @@ export default function Goals({ section }) {
           {d.description && <p>{d.description}</p>}
         </Reveal>
         <Reveal className="goals-target" variants={zoomIn}>
-          <Img image={d.image} />
+          <Img image={d.image} alt="Our goals" />
         </Reveal>
         <div className="goals-cards">
           {goals.map((g, i) => (

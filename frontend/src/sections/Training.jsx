@@ -40,7 +40,7 @@ export default function Training({ section }) {
 
           <Reveal className="b-feature" variants={zoomIn} i={1}>
             <div className="f-img">
-              <Img image={d.feature_image} />
+              <Img image={d.feature_image} alt={d.feature_title || "Training programme"} />
               <div className="f-top">
                 {d.feature_badge && <span className="f-badge">{d.feature_badge}</span>}
                 {d.feature_rating && <span className="f-rating"><Star size={13} /> {d.feature_rating}</span>}
@@ -54,12 +54,12 @@ export default function Training({ section }) {
           </Reveal>
 
           <Reveal className="b-img" variants={fadeRight} i={2}>
-            <Img image={d.card2_image} />
+            <Img image={d.card2_image} alt={d.card2_caption || "Training session"} />
             {d.card2_caption && <span className="caption">{d.card2_caption}</span>}
           </Reveal>
 
           <Reveal className="b-img" variants={fadeLeft} i={2}>
-            <Img image={d.card3_image} />
+            <Img image={d.card3_image} alt={d.card3_title || "Team workshop"} />
             {(d.card3_label || d.card3_title) && (
               <div className="overlay"><small>{d.card3_label}</small><strong>{d.card3_title}</strong></div>
             )}

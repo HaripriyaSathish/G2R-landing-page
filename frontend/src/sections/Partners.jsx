@@ -3,7 +3,7 @@ import { Eyebrow, Heading, Reveal, zoomIn } from '../components/ui'
 function Card({ p }) {
   const inner = (
     <>
-      {p.logo?.url ? <img src={p.logo.url} alt={p.logo.alt || p.name} loading="eager" decoding="async" draggable="false" /> : <strong>{p.name}</strong>}
+      {p.logo?.url ? <img src={p.logo.url} alt={`${p.name} logo`} loading="eager" decoding="async" draggable="false" /> : <strong>{p.name}</strong>}
       <span>{p.name}</span>
     </>
   )

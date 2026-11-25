@@ -37,7 +37,7 @@ export default function Industries({ section, site }) {
                 </Reveal>
                 <Reveal className="ind-media" variants={zoomIn} i={1}>
                   <motion.div className="ind-circle" whileHover={{ scale: 1.04 }}>
-                    <Img image={it.image} />
+                    <Img image={it.image} alt={`${it.title} industry`} />
                   </motion.div>
                 </Reveal>
               </div>

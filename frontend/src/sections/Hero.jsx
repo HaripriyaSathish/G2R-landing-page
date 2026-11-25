@@ -97,7 +97,7 @@ export default function Hero({ section }) {
             <Crescent className="hs-arc hs-arc-tr" size={92} />
             <Crescent className="hs-arc hs-arc-bl" size={80} />
             <motion.div className="hs-person" style={{ y: yImg }} initial={{ opacity: 0, y: 80 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1.1, ease, delay: 0.4 }}>
-              <Img image={d.image} className="hero-person" eager />
+              <Img image={d.image} className="hero-person" eager alt="G2R Global Solutions recruitment and HR consultant" />
             </motion.div>
           {floating.map((b, i) => (
             <motion.div key={b.id} className={`float-badge fb-${i % 3} ${i % 2 ? 'row' : ''}`}

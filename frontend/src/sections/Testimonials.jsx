@@ -43,7 +43,7 @@ export default function Testimonials({ section, social = [] }) {
                 initial={{ opacity: 0, x: dir * 60 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: dir * -60 }}
                 transition={{ duration: 0.5, ease }}>
                 <div className="t-top">
-                  <div className="t-logo"><Img image={t.logo} /></div>
+                  <div className="t-logo"><Img image={t.logo} alt={t.company ? `${t.company} logo` : `${t.name} company logo`} /></div>
                   <div className="t-head">
                     {t.story_label && <span className="t-story"><span className="dot" />{t.story_label}</span>}
                     <div className="t-heading"><em>{t.heading_top}</em><strong>{t.heading_bottom}</strong></div>
@@ -55,7 +55,7 @@ export default function Testimonials({ section, social = [] }) {
 
                 <div className="t-mid">
                   <motion.div className="t-photo" initial={{ rotate: -4, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} transition={{ delay: 0.15, duration: 0.6, ease }}>
-                    <Img image={t.photo} />
+                    <Img image={t.photo} alt={[t.name, t.role].filter(Boolean).join(", ")} />
                   </motion.div>
                   <div className="t-info">
                     {t.badge && <span className="t-badge">{t.badge}</span>}

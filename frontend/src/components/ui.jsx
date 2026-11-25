@@ -144,9 +144,26 @@ export function Eyebrow({ text, light = false, center = false, pill = false }) {
   )
 }
 
-export function Img({ image, className = '', eager = false, ...rest }) {
+/** True when an alt text is empty or just a file name ("Image (5)", "1630623505493", "5logo", "94da5e7e…") */
+export function isWeakAlt(alt) {
+  const a = String(alt || '').trim()
+  if (a.length < 3 || a.length > 90) return true
+  if (/^(image|images|img|photo|picture|pic|logo|screenshot|untitled|download|twittermeta)s?[\s_()\-\d]*$/i.test(a)) return true
+  if (/^[\d\s_\-()]+(logo)?$/i.test(a) || /^\d+\s*logo$/i.test(a)) return true
+  if (/\b[a-f0-9]{12,}\b/i.test(a) || /\b\d{6,}\w*\b/.test(a)) return true
+  return false
+}
+
+/** Use the media library alt when it is meaningful, otherwise the given context text */
+export function altFor(image, fallback = '') {
+  return isWeakAlt(image?.alt) ? fallback : image.alt
+}
+
+/** alt: context alt used when the media library alt is weak; decorative images pass alt="" explicitly */
+export function Img({ image, className = '', eager = false, alt, ...rest }) {
   if (!image?.url) return null
-  return <img src={image.url} alt={image.alt || ''} width={image.width || undefined} height={image.height || undefined} loading={eager ? 'eager' : 'lazy'} decoding="async" className={className} {...rest} />
+  const text = alt === '' ? '' : altFor(image, alt || '')
+  return <img src={image.url} alt={text} width={image.width || undefined} height={image.height || undefined} loading={eager ? 'eager' : 'lazy'} decoding="async" className={className} {...rest} />
 }
 
 /** Smooth-scroll for in-page links; returns true if handled */

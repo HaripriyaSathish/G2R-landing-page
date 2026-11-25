@@ -14,7 +14,7 @@ export default function Careers({ section }) {
             {d.description && <p>{d.description}</p>}
           </motion.div>
           <motion.div className="careers-img" initial={{ opacity: 0, y: 60 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.9, delay: 0.3 }}>
-            <Img image={d.image} />
+            <Img image={d.image} alt="Careers at G2R Global Solutions" />
           </motion.div>
           {d.btn_text && <SmartLink href={d.btn_link} className="btn btn-accent btn-sm">{d.btn_text} <ArrowRight size={16} /></SmartLink>}
         </Reveal>

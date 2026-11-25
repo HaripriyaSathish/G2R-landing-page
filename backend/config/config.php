@@ -4,15 +4,20 @@
  * Only database + app basics live here. SMTP, site content and theme are
  * managed from the admin panel and stored in the database.
  */
+// Local MySQL credentials live in config.local.php (not committed to git).
+// Copy config.local.example.php to config.local.php and fill in your password.
+// On Render the DATABASE_URL environment variable (Neon PostgreSQL) is used instead.
+$local = is_file(__DIR__ . '/config.local.php') ? (array) require __DIR__ . '/config.local.php' : [];
+
 return [
-    'db' => [
+    'db' => array_merge([
         'host'     => '127.0.0.1',
         'port'     => 3306,
         'name'     => 'g2r_landing',
         'user'     => 'root',
-        'pass'     => 'Root123$',
+        'pass'     => '',
         'charset'  => 'utf8mb4',
-    ],
+    ], (array) ($local['db'] ?? [])),
 
     // Leave empty to auto-detect from the request (recommended).
     // Example for production: 'https://api.g2rglobalsolutions.com'

@@ -11,6 +11,11 @@ function admin_header(string $title, string $active = '', array $opts = []): voi
     $site    = setting('site_name', 'G2R Global Solutions');
     $newEnq  = (int) DB::value("SELECT COUNT(*) FROM enquiries WHERE status = 'new'");
     $front   = setting('frontend_url', 'http://localhost:5173');
+    // Single-service deploy (Render): a localhost setting would point nowhere, so use this site's own address
+    $onLocalhost = (bool) preg_match('/^(localhost|127\.0\.0\.1)(:\d+)?$/', (string) ($_SERVER['HTTP_HOST'] ?? ''));
+    if (!$onLocalhost && preg_match('#^https?://(localhost|127\.0\.0\.1)(:\d+)?#i', $front)) {
+        $front = '/';
+    }
     $schema  = Content::schema();
     $nav = [
         ['dashboard', 'index.php', 'layout-dashboard', 'Dashboard'],
@@ -33,7 +38,7 @@ function admin_header(string $title, string $active = '', array $opts = []): voi
 <?php if ($logo): ?><link rel="icon" href="<?= e($logo) ?>"><?php endif; ?>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="<?= e(admin_url('assets/admin.css')) ?>?v=5">
+<link rel="stylesheet" href="<?= e(admin_url('assets/admin.css')) ?>?v=6">
 <style>:root{--primary:<?= e(setting('theme_primary', '#111C50')) ?>;--indigo:<?= e(setting('theme_indigo', '#1D138C')) ?>;--dark:<?= e(setting('theme_dark', '#0D1338')) ?>;--accent:<?= e(setting('theme_accent', '#F36B16')) ?>;}</style>
 <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
 </head>

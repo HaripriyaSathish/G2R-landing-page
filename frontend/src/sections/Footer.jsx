@@ -12,7 +12,7 @@ export default function Footer({ site, social, section, nav }) {
         <div className="footer-grid">
           <Reveal variants={fadeUp}>
             <div className="footer-logo">
-              {logo?.url && <img src={logo.url} alt={logo.alt || site.name} loading="lazy" />}
+              {logo?.url && <img src={logo.url} alt={`${site.name} logo`} loading="lazy" />}
               <strong>{site.name}</strong>
             </div>
             {d.description && <p>{d.description}</p>}

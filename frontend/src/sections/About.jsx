@@ -14,7 +14,7 @@ export default function About({ section }) {
               <span className="dot" />{d.image_tag}{d.image_tag_badge && <em>{d.image_tag_badge}</em>}
             </motion.div>
           )}
-          <Img image={d.image} className="about-person" />
+          <Img image={d.image} className="about-person" alt="About G2R Global Solutions" />
         </Reveal>
 
         <div>

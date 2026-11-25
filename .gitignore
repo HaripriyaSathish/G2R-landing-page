@@ -5,3 +5,4 @@ frontend/dist/
 *.log
 .qodo/
 .claude/settings.local.json
+backend/config/config.local.php

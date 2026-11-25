@@ -108,11 +108,11 @@ export default function Contact({ section, site, social }) {
         <div className="contact-grid">
           <Reveal className="contact-visual" variants={fadeLeft}>
             <div className="contact-main">
-              <Img image={d.image} />
+              <Img image={d.image} alt="Contact the G2R Global Solutions team" />
               {d.image_badge && <span className="contact-badge"><span className="dot" />{d.image_badge}</span>}
             </div>
             <div className="contact-sub">
-              <div className="small-img"><Img image={d.small_image} /></div>
+              <div className="small-img"><Img image={d.small_image} alt="G2R Global Solutions office team" /></div>
               {(d.sla_label || d.sla_value) && <div className="sla-card"><small>{d.sla_label}</small><strong>{d.sla_value}</strong></div>}
             </div>
           </Reveal>
