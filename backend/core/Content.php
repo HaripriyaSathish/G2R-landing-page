@@ -8,9 +8,40 @@ final class Content
     public static function schema(): array
     {
         if (self::$schema === null) {
-            self::$schema = require __DIR__ . '/sections.php';
+            $schema = require __DIR__ . '/sections.php';
+            foreach ($schema as $slug => $def) {
+                $schema[$slug]['fields'] = self::withAltFields($def['fields'] ?? []);
+                foreach ($def['groups'] ?? [] as $grp => $g) {
+                    $schema[$slug]['groups'][$grp]['fields'] = self::withAltFields($g['fields'] ?? []);
+                }
+            }
+            self::$schema = $schema;
         }
         return self::$schema;
+    }
+
+    /**
+     * After every image field add "<key>_alt": alt text for that placement only.
+     * The same image can be used in several places (e.g. hero and careers) with different alt text.
+     * Empty = the image's alt text from the Media Library.
+     */
+    private static function withAltFields(array $fields): array
+    {
+        $keys = array_column(array_filter($fields, static fn ($f) => isset($f['key'])), 'key');
+        $out = [];
+        foreach ($fields as $f) {
+            $out[] = $f;
+            if (($f['type'] ?? '') === 'image' && isset($f['key']) && !in_array($f['key'] . '_alt', $keys, true)) {
+                $out[] = [
+                    'key'   => $f['key'] . '_alt',
+                    'label' => ($f['label'] ?? 'Image') . ' – alt text (SEO)',
+                    'type'  => 'text',
+                    'half'  => $f['half'] ?? false,
+                    'help'  => 'Describes this image for Google and screen readers. Leave empty to use the alt text from the Media Library.',
+                ];
+            }
+        }
+        return $out;
     }
 
     public static function def(string $slug): ?array
@@ -80,10 +111,11 @@ final class Content
             $v = $data[$k] ?? null;
             if ($f['type'] === 'image') {
                 $m = media_find($v ? (int) $v : null);
+                $placementAlt = trim((string) ($data[$k . '_alt'] ?? ''));
                 $out[$k] = $m ? [
                     'id' => (int) $m['id'],
                     'url' => media_url((int) $m['id']),
-                    'alt' => $m['alt_text'],
+                    'alt' => $placementAlt !== '' ? $placementAlt : $m['alt_text'],
                     'width' => $m['width'] ? (int) $m['width'] : null,
                     'height' => $m['height'] ? (int) $m['height'] : null,
                 ] : null;
@@ -125,17 +157,18 @@ final class Content
     public static function sitePayload(): array
     {
         $s = settings_all();
-        $img = static function ($id) {
+        $img = static function ($id, string $alt = '') {
             $m = media_find($id ? (int) $id : null);
-            return $m ? ['id' => (int) $m['id'], 'url' => media_url((int) $m['id']), 'alt' => $m['alt_text']] : null;
+            $alt = trim($alt);
+            return $m ? ['id' => (int) $m['id'], 'url' => media_url((int) $m['id']), 'alt' => $alt !== '' ? $alt : $m['alt_text']] : null;
         };
 
         $payload = [
             'site' => [
                 'name'        => $s['site_name'] ?? '',
                 'tagline'     => $s['site_tagline'] ?? '',
-                'logo'        => $img($s['site_logo'] ?? null),
-                'footer_logo' => $img($s['footer_logo'] ?? null),
+                'logo'        => $img($s['site_logo'] ?? null, (string) ($s['site_logo_alt'] ?? '')),
+                'footer_logo' => $img($s['footer_logo'] ?? null, (string) ($s['footer_logo_alt'] ?? '')),
                 'favicon'     => $img($s['site_favicon'] ?? null),
                 'phone'       => $s['contact_phone'] ?? '',
                 'phone_alt'   => $s['contact_phone_alt'] ?? '',

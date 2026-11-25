@@ -1,4 +1,4 @@
-import { Reveal, SmartLink, SocialIcon, fadeUp } from '../components/ui'
+import { Reveal, SmartLink, SocialIcon, altFor, fadeUp, socialLabel } from '../components/ui'
 
 export default function Footer({ site, social, section, nav }) {
   const d = section?.data || {}
@@ -12,12 +12,12 @@ export default function Footer({ site, social, section, nav }) {
         <div className="footer-grid">
           <Reveal variants={fadeUp}>
             <div className="footer-logo">
-              {logo?.url && <img src={logo.url} alt={`${site.name} logo`} loading="lazy" />}
+              {logo?.url && <img src={logo.url} alt={altFor(logo, `${site.name} logo`)} loading="lazy" />}
               <strong>{site.name}</strong>
             </div>
             {d.description && <p>{d.description}</p>}
             <div className="socials">
-              {social.map((s) => <a key={s.key} href={s.url} target="_blank" rel="noopener noreferrer" aria-label={s.key}><SocialIcon name={s.key} /></a>)}
+              {social.map((s) => <a key={s.key} href={s.url} target="_blank" rel="noopener noreferrer" aria-label={socialLabel(site.name, s.key)}><SocialIcon name={s.key} /></a>)}
             </div>
           </Reveal>
           <Reveal variants={fadeUp} i={1}>

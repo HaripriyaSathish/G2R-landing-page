@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+
+Disallow: /admin
+
+Sitemap: https://g2rglobalsolutions.com/sitemap.xml

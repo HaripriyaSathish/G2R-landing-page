@@ -9,6 +9,8 @@ $tabs = [
         ['key' => 'site_tagline', 'label' => 'Tagline (under logo)', 'type' => 'text', 'half' => true],
         ['key' => 'site_logo', 'label' => 'Header logo', 'type' => 'image', 'half' => true],
         ['key' => 'footer_logo', 'label' => 'Footer logo', 'type' => 'image', 'half' => true],
+        ['key' => 'site_logo_alt', 'label' => 'Header logo – alt text (SEO)', 'type' => 'text', 'half' => true, 'placeholder' => 'G2R Global Solutions company logo'],
+        ['key' => 'footer_logo_alt', 'label' => 'Footer logo – alt text (SEO)', 'type' => 'text', 'half' => true, 'placeholder' => 'G2R Global Solutions logo'],
         ['key' => 'site_favicon', 'label' => 'Favicon (browser tab icon)', 'type' => 'image', 'help' => 'Square image, at least 64×64.'],
     ]],
     'contact' => ['Contact details', 'phone', [

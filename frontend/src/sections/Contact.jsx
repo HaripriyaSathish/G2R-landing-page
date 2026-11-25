@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { CheckCircle2, AlertCircle, MapPin, Phone, Send, Share2, Users } from 'lucide-react'
-import { Heading, Img, Reveal, SocialIcon, fadeLeft, fadeRight, fadeUp } from '../components/ui'
+import { Heading, Img, Reveal, SocialIcon, fadeLeft, fadeRight, fadeUp, socialLabel } from '../components/ui'
 import { sendEnquiry } from '../api'
 
 const NAME_MAX = 50
@@ -123,7 +123,7 @@ export default function Contact({ section, site, social }) {
             <form className="form" onSubmit={submit} noValidate>
               {field('name', 'Name', <input id="c_name" value={form.name} onChange={set('name')} onBlur={blur('name')} placeholder="Type Your Name" autoComplete="name" maxLength={NAME_MAX} aria-invalid={!!errors.name} />, true)}
               {field('email', 'Mail', <input id="c_email" type="email" value={form.email} onChange={set('email')} onBlur={blur('email')} placeholder="Type Your Email" autoComplete="email" maxLength={EMAIL_MAX} aria-invalid={!!errors.email} />)}
-              {field('phone', 'Mobile Number', <input id="c_phone" type="tel" inputMode="numeric" value={form.phone} onChange={set('phone')} onBlur={blur('phone')} placeholder="10-digit mobile number" autoComplete="tel-national" aria-invalid={!!errors.phone} />)}
+              {field('phone', 'Telephone', <input id="c_phone" type="tel" inputMode="numeric" value={form.phone} onChange={set('phone')} onBlur={blur('phone')} placeholder="Type Your Phone Number" autoComplete="tel-national" aria-invalid={!!errors.phone} />)}
               {field('enquiry_type', 'Enquiry Type', (
                 <select id="c_enquiry_type" value={form.enquiry_type} onChange={set('enquiry_type')} onBlur={blur('enquiry_type')} aria-invalid={!!errors.enquiry_type}>
                   <option value="">Select Service of Interest</option>
@@ -159,7 +159,7 @@ export default function Contact({ section, site, social }) {
           <div className="info-col">
             <h4><Users size={16} />{d.social_label || 'Social Connection'}</h4>
             <div className="socials">
-              {social.map((s) => <a key={s.key} href={s.url} target="_blank" rel="noopener noreferrer" aria-label={s.key}><SocialIcon name={s.key} /></a>)}
+              {social.map((s) => <a key={s.key} href={s.url} target="_blank" rel="noopener noreferrer" aria-label={socialLabel(site.name, s.key)}><SocialIcon name={s.key} /></a>)}
               {!social.length && <Share2 size={18} />}
             </div>
           </div>

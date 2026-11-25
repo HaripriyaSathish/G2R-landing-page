@@ -11,7 +11,7 @@ export function Heading({ text = '', as: Tag = 'h2', className = '', ...rest }) 
     <Tag className={className} {...rest}>
       {lines.map((line, li) => (
         <Fragment key={li}>
-          {li > 0 && <br />}
+          {li > 0 && <>{' '}<br /></>}
           {line.split(/(\{[^}]+\}|\[[^\]]+\])/g).map((part, i) => {
             if (/^\{.*\}$/.test(part)) return <span key={i} className="hl-accent">{part.slice(1, -1)}</span>
             if (/^\[.*\]$/.test(part)) return <span key={i} className="hl-indigo">{part.slice(1, -1)}</span>
@@ -150,11 +150,18 @@ export function Eyebrow({ text, light = false, center = false, pill = false }) {
 /** True when an alt text is empty or just a file name ("Image (5)", "1630623505493", "5logo", "94da5e7e…") */
 export function isWeakAlt(alt) {
   const a = String(alt || '').trim()
-  if (a.length < 3 || a.length > 90) return true
+  if (a.length < 3 || a.length > 150) return true
   if (/^(image|images|img|photo|picture|pic|logo|screenshot|untitled|download|twittermeta)s?[\s_()\-\d]*$/i.test(a)) return true
   if (/^[\d\s_\-()]+(logo)?$/i.test(a) || /^\d+\s*logo$/i.test(a)) return true
   if (/\b[a-f0-9]{12,}\b/i.test(a) || /\b\d{6,}\w*\b/.test(a)) return true
   return false
+}
+
+const SOCIAL_NAMES = { linkedin: 'LinkedIn', instagram: 'Instagram', facebook: 'Facebook', youtube: 'YouTube', twitter: 'X (Twitter)' }
+/** Accessible label for a social icon link, e.g. "G2R Global Solutions on LinkedIn" */
+export function socialLabel(siteName, key) {
+  const net = SOCIAL_NAMES[key] || key
+  return siteName ? `${siteName} on ${net}` : net
 }
 
 /** Use the media library alt when it is meaningful, otherwise the given context text */

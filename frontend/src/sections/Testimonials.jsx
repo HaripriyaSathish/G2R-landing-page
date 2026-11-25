@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { ChevronLeft, ChevronRight, Star } from 'lucide-react'
-import { Eyebrow, Heading, Img, Reveal, SocialIcon, ease, zoomIn } from '../components/ui'
+import { Eyebrow, Heading, Img, Reveal, SocialIcon, ease, socialLabel, zoomIn } from '../components/ui'
 
 /** Client testimonials — Figma: 768-wide showcase card with a slider of partner stories. */
-export default function Testimonials({ section, social = [] }) {
+export default function Testimonials({ section, site, social = [] }) {
   const d = section.data
   const items = section.items.testimonials || []
   const [index, setIndex] = useState(0)
@@ -48,7 +48,7 @@ export default function Testimonials({ section, social = [] }) {
                     {t.story_label && <span className="t-story"><span className="dot" />{t.story_label}</span>}
                     <div className="t-heading"><em>{t.heading_top}</em><strong>{t.heading_bottom}</strong></div>
                     <div className="t-social">
-                      {social.slice(0, 3).map((s) => <a key={s.key} href={s.url} target="_blank" rel="noopener noreferrer" aria-label={s.key}><SocialIcon name={s.key} size={11} /></a>)}
+                      {social.slice(0, 3).map((s) => <a key={s.key} href={s.url} target="_blank" rel="noopener noreferrer" aria-label={socialLabel(site?.name, s.key)}><SocialIcon name={s.key} size={11} /></a>)}
                     </div>
                   </div>
                 </div>

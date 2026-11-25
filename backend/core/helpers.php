@@ -188,7 +188,7 @@ function media_store(string $tmpPath, string $originalName, bool $isUpload = tru
 function alt_is_weak(string $alt): bool
 {
     $a = trim($alt);
-    if (mb_strlen($a) < 3 || mb_strlen($a) > 90) {
+    if (mb_strlen($a) < 3 || mb_strlen($a) > 150) {
         return true;
     }
     return (bool) (preg_match('/^(image|images|img|photo|picture|pic|logo|screenshot|untitled|download|twittermeta)s?[\s_()\-\d]*$/i', $a)

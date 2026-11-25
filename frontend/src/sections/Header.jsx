@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Menu, X, ArrowRight, Send } from 'lucide-react'
-import { SmartLink } from '../components/ui'
+import { SmartLink, altFor } from '../components/ui'
 
 export default function Header({ site, section }) {
   const nav = section?.items?.nav || []
@@ -36,7 +36,7 @@ export default function Header({ site, section }) {
       <motion.header className={`header ${scrolled ? 'scrolled' : ''}`} initial={{ y: -100 }} animate={{ y: 0 }} transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}>
         <div className="container header-inner">
           <SmartLink href="#home" className="logo" aria-label={site.name}>
-            {site.logo?.url && <img className="logo-img" src={site.logo.url} alt={`${site.name} logo`} />}
+            {site.logo?.url && <img className="logo-img" src={site.logo.url} alt={altFor(site.logo, `${site.name} logo`)} />}
             <span>
               <span className="logo-name">{site.name}</span>
               {site.tagline && <span className="logo-tag">{site.tagline}</span>}

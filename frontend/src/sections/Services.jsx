@@ -15,7 +15,7 @@ export default function Services({ section }) {
       <div className="container services-grid">
         <Reveal className="services-left" variants={fadeLeft}>
           <motion.div className="bar" initial={{ width: 0 }} whileInView={{ width: 46 }} viewport={{ once: true }} transition={{ duration: 0.8, delay: 0.3 }} />
-          <h2 className="services-title">{d.title_top}<span>{d.title_bottom}</span></h2>
+          <h2 className="services-title">{d.title_top}{d.title_top && d.title_bottom ? " " : ""}<span>{d.title_bottom}</span></h2>
           {d.description && <p>{d.description}</p>}
           {d.hint && <div className="services-hint"><span className="dot" />{d.hint}</div>}
         </Reveal>
