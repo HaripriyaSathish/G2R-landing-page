@@ -1333,3 +1333,83 @@ html, body { max-width: 100%; overflow-x: clip; }
 
 /* Contact form: message character counter */
 .form .count { display: block; text-align: right; font-size: 12px; color: rgba(255, 255, 255, .5); margin-top: 6px; }
+
+/* =====================================================================
+   MOBILE / TABLET FIX — Industries We Serve + Training & Development.
+   The Figma "alignment pass" above sets desktop grids without a media query,
+   which overrode the earlier responsive rules. These come last so they win.
+   ===================================================================== */
+@media (max-width: 1024px) {
+  /* Industries: image left, text right, no centre timeline */
+  .ind-list { gap: 64px; }
+  .ind-list::before, .ind-item::after { display: none; }
+  .ind-item, .ind-item.flip { grid-template-columns: 220px minmax(0, 1fr); gap: 36px; }
+  .ind-text, .ind-item.flip .ind-text { order: 2; text-align: left; justify-self: stretch; max-width: none; }
+  .ind-media, .ind-item.flip .ind-media { order: 1; justify-content: flex-start; }
+  .ind-text .tags, .ind-item.flip .ind-text .tags { justify-content: flex-start; }
+  .ind-circle { width: 220px; height: 220px; }
+  .industries-globe { width: 1100px; }
+  .ind-cta { flex-direction: column; align-items: flex-start; gap: 18px; padding: 28px 28px; min-height: 0; }
+  .ind-cta .btn { width: auto; }
+
+  /* Training: 2 columns, feature card full width on top */
+  .bento { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: none; gap: 18px; }
+  .b-feature { grid-column: 1 / -1; grid-row: auto; order: -1; }
+  .b-feature .f-img { height: 260px; }
+  .b-img { min-height: 260px; }
+  .b-stat, .b-stat2 { padding: 26px; }
+}
+
+@media (max-width: 720px) {
+  /* Industries: one column, image centred above the text */
+  .industries .section-head { margin-bottom: 40px; }
+  .ind-list { gap: 52px; }
+  .ind-item, .ind-item.flip { grid-template-columns: minmax(0, 1fr); gap: 22px; }
+  .ind-media, .ind-item.flip .ind-media { justify-content: center; }
+  .ind-circle { width: 200px; height: 200px; margin: 0 auto; }
+  .ind-circle::before { inset: -10px; }
+  .ind-text, .ind-item.flip .ind-text { text-align: center; }
+  .ind-text .tags, .ind-item.flip .ind-text .tags { justify-content: center; flex-wrap: wrap; }
+  .ind-text h3 { font-size: 21px; }
+  .ind-text p { font-size: 14px; }
+  .industries-globe { width: 760px; }
+  .ind-cta { margin-top: 56px; padding: 24px 20px; text-align: left; }
+  .ind-cta h3 { font-size: 20px; margin-top: 10px; }
+  .ind-cta .btn { width: 100%; justify-content: center; }
+
+  /* Training: single column */
+  .training .section-head { margin-bottom: 36px; }
+  .bento { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+  .b-feature { grid-column: auto; }
+  .b-feature .f-img { height: 220px; }
+  .b-feature h3 { font-size: 24px; }
+  .b-img { min-height: 230px; }
+  .b-stat, .b-stat2 { padding: 22px; }
+  .b-stat .value, .b-stat2 .value { font-size: 42px; }
+  .b-stat2 .row { flex-wrap: wrap; gap: 10px; }
+}
+
+/* =====================================================================
+   FLOATING CONTACT — Call / WhatsApp / Email (Admin → Site Settings → Floating buttons)
+   ===================================================================== */
+.float-contact { position: fixed; left: 24px; bottom: 24px; z-index: 90; display: flex; flex-direction: column; gap: 12px; }
+.float-contact.right { left: auto; right: 24px; bottom: 90px; }
+.fc-btn { position: relative; width: 52px; height: 52px; border-radius: 50%; display: grid; place-items: center; color: #fff; box-shadow: 0 10px 26px rgba(13, 19, 56, .28); }
+.fc-call { background: linear-gradient(135deg, var(--primary), var(--indigo)); }
+.fc-whatsapp { background: #25D366; box-shadow: 0 10px 26px rgba(37, 211, 102, .42); }
+.fc-whatsapp::before { content: ""; position: absolute; inset: 0; border-radius: 50%; background: #25D366; z-index: -1; animation: fc-pulse 2.2s ease-out infinite; }
+.fc-email { background: linear-gradient(135deg, #ff8a3d, var(--accent)); box-shadow: 0 10px 26px rgba(243, 107, 22, .38); }
+.fc-tip { position: absolute; left: calc(100% + 12px); top: 50%; transform: translate(-6px, -50%); white-space: nowrap; padding: 7px 12px; border-radius: 8px; background: var(--dark); color: #fff; font: 600 12.5px var(--font-b); box-shadow: 0 8px 20px rgba(13, 19, 56, .25); opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s; }
+.float-contact.right .fc-tip { left: auto; right: calc(100% + 12px); transform: translate(6px, -50%); }
+.fc-btn:hover .fc-tip, .fc-btn:focus-visible .fc-tip { opacity: 1; transform: translate(0, -50%); }
+.fc-btn:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+@keyframes fc-pulse { 0% { transform: scale(1); opacity: .55; } 80%, 100% { transform: scale(1.7); opacity: 0; } }
+@media (max-width: 720px) {
+  .float-contact { left: 14px; bottom: 16px; gap: 10px; }
+  .float-contact.right { right: 14px; bottom: 76px; }
+  .fc-btn { width: 46px; height: 46px; }
+  .fc-btn svg { width: 20px; height: 20px; }
+  .fc-tip { display: none; }
+}
+@media (hover: none) { .fc-tip { display: none; } }
+@media print { .float-contact { display: none; } }

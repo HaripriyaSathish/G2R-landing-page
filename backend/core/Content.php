@@ -143,6 +143,18 @@ final class Content
                 'address'     => $s['contact_address'] ?? '',
                 'map_url'     => $s['contact_map_url'] ?? '',
                 'whatsapp'    => $s['whatsapp_number'] ?? '',
+                // Floating Call / WhatsApp / Email buttons (Admin → Site Settings → Floating buttons).
+                // Empty overrides fall back to the footer phone / email. Buttons are on unless switched off.
+                'floating'    => [
+                    'call'      => ($s['float_call'] ?? '1') !== '0',
+                    'whatsapp'  => ($s['float_whatsapp'] ?? '1') !== '0',
+                    'email'     => ($s['float_email'] ?? '1') !== '0',
+                    'phone'     => trim((string) ($s['float_phone'] ?? '')),
+                    'wa_number' => trim((string) ($s['float_whatsapp_number'] ?? '')),
+                    'wa_text'   => trim((string) ($s['float_whatsapp_text'] ?? '')),
+                    'mail'      => trim((string) ($s['float_mail'] ?? '')),
+                    'position'  => ($s['float_position'] ?? 'left') === 'right' ? 'right' : 'left',
+                ],
             ],
             'social' => array_values(array_filter([
                 ['key' => 'linkedin',  'url' => $s['social_linkedin'] ?? ''],

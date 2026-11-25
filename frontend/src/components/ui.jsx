@@ -92,13 +92,16 @@ export const fadeUp = {
   hidden: { opacity: 0, y: 40 },
   show: (i = 0) => ({ opacity: 1, y: 0, transition: { duration: 0.7, ease, delay: i * 0.12 } }),
 }
+// On phones a sideways slide starts 60px off-screen, so text looks cut while it moves in.
+// Small screens use a short upward fade instead.
+const SMALL = typeof window !== 'undefined' && window.matchMedia('(max-width: 720px)').matches
 export const fadeLeft = {
-  hidden: { opacity: 0, x: -60 },
-  show: (i = 0) => ({ opacity: 1, x: 0, transition: { duration: 0.8, ease, delay: i * 0.12 } }),
+  hidden: SMALL ? { opacity: 0, x: 0, y: 30 } : { opacity: 0, x: -60 },
+  show: (i = 0) => ({ opacity: 1, x: 0, y: 0, transition: { duration: 0.8, ease, delay: i * 0.12 } }),
 }
 export const fadeRight = {
-  hidden: { opacity: 0, x: 60 },
-  show: (i = 0) => ({ opacity: 1, x: 0, transition: { duration: 0.8, ease, delay: i * 0.12 } }),
+  hidden: SMALL ? { opacity: 0, x: 0, y: 30 } : { opacity: 0, x: 60 },
+  show: (i = 0) => ({ opacity: 1, x: 0, y: 0, transition: { duration: 0.8, ease, delay: i * 0.12 } }),
 }
 export const zoomIn = {
   hidden: { opacity: 0, scale: 0.85 },

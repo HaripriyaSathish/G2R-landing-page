@@ -41,6 +41,18 @@ $tabs = [
         ['key' => 'seo_locale', 'label' => 'Language / region', 'type' => 'select', 'half' => true, 'options' => ['en_IN' => 'English (India)', 'en_US' => 'English (US)', 'en_GB' => 'English (UK)']],
         ['key' => 'seo_business_type', 'label' => 'Business type (Google rich results)', 'type' => 'select', 'half' => true, 'options' => ['ProfessionalService' => 'Professional service', 'EmploymentAgency' => 'Employment agency', 'Organization' => 'Organization', 'LocalBusiness' => 'Local business']],
     ]],
+    'floating' => ['Floating buttons', 'message-circle', [
+        ['type' => 'divider', 'label' => 'Show on website'],
+        ['key' => 'float_call', 'label' => 'Call button', 'type' => 'checkbox', 'half' => true],
+        ['key' => 'float_whatsapp', 'label' => 'WhatsApp button', 'type' => 'checkbox', 'half' => true],
+        ['key' => 'float_email', 'label' => 'Email button', 'type' => 'checkbox', 'half' => true],
+        ['key' => 'float_position', 'label' => 'Position on screen', 'type' => 'select', 'half' => true, 'options' => ['left' => 'Bottom left', 'right' => 'Bottom right (above back-to-top)']],
+        ['type' => 'divider', 'label' => 'Contact details (leave empty to use the footer details)'],
+        ['key' => 'float_phone', 'label' => 'Call number', 'type' => 'text', 'half' => true, 'placeholder' => 'Footer phone', 'help' => 'Empty = the phone from Contact details.'],
+        ['key' => 'float_whatsapp_number', 'label' => 'WhatsApp number', 'type' => 'text', 'half' => true, 'placeholder' => 'Footer phone', 'help' => '10-digit Indian numbers get +91 automatically.'],
+        ['key' => 'float_mail', 'label' => 'Email address', 'type' => 'text', 'half' => true, 'placeholder' => 'Footer email', 'help' => 'Empty = the email from Contact details.'],
+        ['key' => 'float_whatsapp_text', 'label' => 'WhatsApp greeting message', 'type' => 'text', 'half' => true, 'placeholder' => 'Hello, I would like to know more about your services.', 'help' => 'Pre-filled when a visitor opens WhatsApp.'],
+    ]],
     'theme' => ['Theme & colours', 'palette', [
         ['type' => 'divider', 'label' => 'Brand colours'],
         ['key' => 'theme_primary', 'label' => 'Primary navy', 'type' => 'color', 'half' => true],
@@ -85,7 +97,9 @@ if (is_post()) {
 $values = [];
 foreach ($fields as $f) {
     if (empty($f['key'])) continue;
-    $v = setting($f['key'], $f['key'] === 'frontend_url' ? 'http://localhost:5173' : '');
+    $default = $f['key'] === 'frontend_url' ? 'http://localhost:5173'
+        : (in_array($f['key'], ['float_call', 'float_whatsapp', 'float_email'], true) ? '1' : '');
+    $v = setting($f['key'], $default);
     if ($f['type'] === 'checkbox') $v = $v === '1';
     $values[$f['key']] = $v;
 }
