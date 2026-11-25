@@ -1477,8 +1477,11 @@ body.no-anim .ind-item::before { animation: none; }
   .about-tag { left: 18px; right: 18px; width: auto; }
 }
 
-/* ABOUT on desktop: bigger photo (was max 693px wide), centred on its column,
-   still standing on the section's bottom edge; the empty space above it is used. */
+/* ABOUT on desktop: taller photo that stays on the LEFT side only.
+   The person fills x 20.2%..88.8% of the PNG (the rest is transparent), so the image is anchored
+   by its right edge: the person ends 8px before the left column ends and never reaches the cards.
+   It grows upwards from the section bottom; the tag moves up to make room for the head. */
 @media (min-width: 1025px) {
-  .about-person { width: min(860px, 60vw); left: calc(50% - min(430px, 30vw)); }
+  .about-person { --pw: min(880px, 60vw); width: var(--pw); left: auto; right: calc(8px - var(--pw) * 0.112); }
+  .about-tag { top: 28px; }
 }
