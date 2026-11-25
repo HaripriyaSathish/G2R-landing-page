@@ -39,8 +39,7 @@ $my = new PDO(
 );
 
 // Target: PostgreSQL
-[$dsn, $user, $pass] = DB::pgsqlDsn($url);
-$pg = new PDO($dsn, $user, $pass, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC]);
+$pg = DB::pdo(); // same connection logic as the app (handles Neon SNI on old and new libpq)
 
 $tables = ['admins', 'settings', 'media', 'sections', 'section_items', 'enquiries'];
 

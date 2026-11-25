@@ -21,11 +21,20 @@ final class DB
             ];
             $url = self::databaseUrl();
             if ($url !== '') {
-                [$dsn, $user, $pass] = self::pgsqlDsn($url);
                 self::$driver = 'pgsql';
                 // Client-side prepares: one network round trip per query and safe with Neon's pooler
                 $opts[PDO::ATTR_EMULATE_PREPARES] = true;
-                self::$pdo = new PDO($dsn, $user, $pass, $opts);
+                [$dsn, $user, $pass] = self::pgsqlDsn($url);
+                try {
+                    self::$pdo = new PDO($dsn, $user, $pass, $opts);
+                } catch (PDOException $e) {
+                    // Old libpq (no SNI, e.g. XAMPP on Windows): Neon asks for the endpoint id explicitly
+                    if (!preg_match('/endpoint id is not specified|sni/i', $e->getMessage())) {
+                        throw $e;
+                    }
+                    [$dsn, $user, $pass] = self::pgsqlDsn($url, true);
+                    self::$pdo = new PDO($dsn, $user, $pass, $opts);
+                }
             } else {
                 $c = config('db');
                 $dsn = sprintf('mysql:host=%s;port=%d;dbname=%s;charset=%s', $c['host'], $c['port'], $c['name'], $c['charset']);
@@ -47,7 +56,7 @@ final class DB
     }
 
     /** postgresql://user:pass@host:port/db?sslmode=require → [dsn, user, pass] */
-    public static function pgsqlDsn(string $url): array
+    public static function pgsqlDsn(string $url, bool $neonEndpointOption = false): array
     {
         $p = parse_url($url);
         if (!$p || empty($p['host'])) {
@@ -60,8 +69,9 @@ final class DB
             'dbname=' . ltrim($p['path'] ?? '/postgres', '/'),
             'sslmode=' . ($q['sslmode'] ?? 'require'),
         ];
-        // Older libpq builds have no SNI; Neon then needs the endpoint id passed explicitly.
-        if (str_ends_with($p['host'], '.neon.tech')) {
+        // Only for older libpq builds without SNI: Neon then needs the endpoint id passed explicitly.
+        // Modern libpq (Render/Docker) sends SNI itself and Neon rejects a second, different value.
+        if ($neonEndpointOption && str_ends_with($p['host'], '.neon.tech')) {
             $endpoint = preg_replace('/-pooler$/', '', explode('.', $p['host'])[0]);
             $parts[] = "options='endpoint=" . $endpoint . "'";
         }
