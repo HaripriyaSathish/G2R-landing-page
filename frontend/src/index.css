@@ -1482,6 +1482,6 @@ body.no-anim .ind-item::before { animation: none; }
    by its right edge: the person ends 8px before the left column ends and never reaches the cards.
    It grows upwards from the section bottom; the tag moves up to make room for the head. */
 @media (min-width: 1025px) {
-  .about-person { --pw: min(880px, 60vw); width: var(--pw); left: auto; right: calc(8px - var(--pw) * 0.112); }
+  .about-person { --pw: min(780px, 53vw); width: var(--pw); left: auto; right: calc(8px - var(--pw) * 0.112); }
   .about-tag { top: 28px; }
 }
