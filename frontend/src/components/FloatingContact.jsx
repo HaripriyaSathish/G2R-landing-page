@@ -43,7 +43,7 @@ export default function FloatingContact({ site }) {
   if (!items.length) return null
 
   return (
-    <nav className={`float-contact ${f.position === 'right' ? 'right' : ''}`} aria-label="Contact us">
+    <nav className={`float-contact ${f.position === 'left' ? '' : 'right'}`} aria-label="Contact us">
       {items.map((it, i) => (
         <motion.a
           key={it.key}
@@ -51,7 +51,7 @@ export default function FloatingContact({ site }) {
           href={it.href}
           aria-label={it.label}
           {...(it.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-          initial={{ opacity: 0, x: -30, scale: 0.6 }}
+          initial={{ opacity: 0, x: f.position === 'left' ? -30 : 30, scale: 0.6 }}
           animate={{ opacity: 1, x: 0, scale: 1 }}
           transition={{ delay: 0.6 + i * 0.12, type: 'spring', stiffness: 260, damping: 18 }}
           whileHover={{ scale: 1.1 }}

@@ -153,7 +153,7 @@ final class Content
                     'wa_number' => trim((string) ($s['float_whatsapp_number'] ?? '')),
                     'wa_text'   => trim((string) ($s['float_whatsapp_text'] ?? '')),
                     'mail'      => trim((string) ($s['float_mail'] ?? '')),
-                    'position'  => ($s['float_position'] ?? 'left') === 'right' ? 'right' : 'left',
+                    'position'  => ($s['float_position'] ?? 'right') === 'left' ? 'left' : 'right',
                 ],
             ],
             'social' => array_values(array_filter([

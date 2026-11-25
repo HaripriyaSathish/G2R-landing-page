@@ -46,7 +46,7 @@ $tabs = [
         ['key' => 'float_call', 'label' => 'Call button', 'type' => 'checkbox', 'half' => true],
         ['key' => 'float_whatsapp', 'label' => 'WhatsApp button', 'type' => 'checkbox', 'half' => true],
         ['key' => 'float_email', 'label' => 'Email button', 'type' => 'checkbox', 'half' => true],
-        ['key' => 'float_position', 'label' => 'Position on screen', 'type' => 'select', 'half' => true, 'options' => ['left' => 'Bottom left', 'right' => 'Bottom right (above back-to-top)']],
+        ['key' => 'float_position', 'label' => 'Position on screen', 'type' => 'select', 'half' => true, 'options' => ['right' => 'Bottom right (above back-to-top)', 'left' => 'Bottom left']],
         ['type' => 'divider', 'label' => 'Contact details (leave empty to use the footer details)'],
         ['key' => 'float_phone', 'label' => 'Call number', 'type' => 'text', 'half' => true, 'placeholder' => 'Footer phone', 'help' => 'Empty = the phone from Contact details.'],
         ['key' => 'float_whatsapp_number', 'label' => 'WhatsApp number', 'type' => 'text', 'half' => true, 'placeholder' => 'Footer phone', 'help' => '10-digit Indian numbers get +91 automatically.'],
