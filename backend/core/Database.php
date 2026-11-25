@@ -38,7 +38,12 @@ final class DB
 
     public static function databaseUrl(): string
     {
-        return trim((string) (getenv('DATABASE_URL') ?: ($_SERVER['DATABASE_URL'] ?? '')));
+        $raw = trim((string) (getenv('DATABASE_URL') ?: ($_SERVER['DATABASE_URL'] ?? '')));
+        // Tolerate common pasting mistakes: quotes, spaces, or Neon's "psql 'postgresql://...'" snippet
+        if (preg_match('#postgres(?:ql)?://[^\s\'"]+#i', $raw, $m)) {
+            return $m[0];
+        }
+        return trim($raw, " \t\n\r\0\x0B'\"");
     }
 
     /** postgresql://user:pass@host:port/db?sslmode=require → [dsn, user, pass] */
