@@ -15,7 +15,8 @@ export default function Industries({ section, site }) {
           {d.description && <Reveal as="p" className="section-desc" i={1}>{d.description}</Reveal>}
         </div>
 
-        <div className="ind-wrap">
+        {/* --ind-globe: same globe image, repeated behind every circle card on phones (see index.css) */}
+        <div className="ind-wrap" style={d.bg_image?.url ? { '--ind-globe': `url("${d.bg_image.url}")` } : undefined}>
         {/* one big globe behind the whole column of circle cards */}
         {d.bg_image?.url && <img className="industries-globe" src={d.bg_image.url} alt="" aria-hidden="true" loading="lazy" />}
         <div className="ind-list">

@@ -1413,3 +1413,29 @@ html, body { max-width: 100%; overflow-x: clip; }
 }
 @media (hover: none) { .fc-tip { display: none; } }
 @media print { .float-contact { display: none; } }
+
+/* Industries on phones: the one big globe only sat behind a couple of cards,
+   so show the same globe behind EVERY circle card instead. */
+@media (max-width: 720px) {
+  .ind-wrap .industries-globe { display: none; }
+  /* globe lives on the row (never animated) so the screen blend always sees the section background;
+     on phones the 200px circle is the first thing in the row, so its centre is 100px down */
+  .ind-item { position: relative; }
+  .ind-item::before {
+    content: ""; position: absolute; z-index: 0; left: 50%; top: 100px;
+    width: min(340px, 94vw); aspect-ratio: 1; transform: translate(-50%, -50%);
+    /* image is a blue globe on white: zoom so the globe fills the box, crop to a circle,
+       invert so white becomes dark and the lines become light */
+    background: var(--ind-globe) center / 175% auto no-repeat;
+    -webkit-mask: radial-gradient(circle closest-side, #000 97%, transparent 100%);
+    mask: radial-gradient(circle closest-side, #000 97%, transparent 100%);
+    filter: invert(1) hue-rotate(180deg) brightness(1.3);
+    mix-blend-mode: screen; /* dark background disappears: only the globe lines show */
+    opacity: .35; pointer-events: none;
+    animation: ind-globe-spin 90s linear infinite;
+  }
+  .ind-media, .ind-text { position: relative; z-index: 1; }
+}
+@keyframes ind-globe-spin { to { transform: translate(-50%, -50%) rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .ind-item::before { animation: none; } }
+body.no-anim .ind-item::before { animation: none; }
